@@ -1,4 +1,4 @@
-import { formatAnswer } from './answer-format.mjs';
+import { formatAnswer } from './answer-format.mjs?release=5ec20cb6-r1';
 
 (() => {
   const KEY = 'lyric-glass-v1';
@@ -45,6 +45,6 @@ import { formatAnswer } from './answer-format.mjs';
   $('#addSongOpen').addEventListener('click',()=>$('#addSongDialog').showModal());$('#addSongForm').addEventListener('submit',e=>{e.preventDefault();const title=$('#newTitle').value.trim(),artist=$('#newArtist').value.trim();if(!title||!artist){toast('曲名とアーティストを入力してください');return;}if(allSongs().some(s=>s.title.toLocaleLowerCase()===title.toLocaleLowerCase()&&s.artist.toLocaleLowerCase()===artist.toLocaleLowerCase())){toast('この曲はすでに登録されています');return;}state.songs.unshift({id:'user-'+(crypto.randomUUID?crypto.randomUUID():Date.now()),title,artist,tone:'user',phrase:title.split(/\s+/).slice(0,5).join(' '),memo:'曲名の表現をじっくり見てみましょう。歌詞を入力して語句を選ぶと、Workers AI に質問できます。',lyrics:''});const saved=persist();renderHome();e.target.reset();$('#addSongDialog').close();toast(saved?'曲を追加しました':'曲は表示中ですが、端末に保存できませんでした');});
   document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.nav==='notes'?'notes':'home')));document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).close()));$('#lyricsHelp').addEventListener('click',()=>$('#helpDialog').showModal());
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').style.display='block';});$('#installBtn').addEventListener('click',async()=>{if(!deferredInstall){toast('Safariでは共有メニューから「ホーム画面に追加」を選べます');return;}deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;});
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?release=5ec20cb6-r1',{updateViaCache:'none'}).catch(()=>{}));
   renderHome();setTimeout(()=>{$('#boot').classList.add('done');$('#app').classList.remove('is-loading');$('#app').setAttribute('aria-hidden','false');},650);
 })();

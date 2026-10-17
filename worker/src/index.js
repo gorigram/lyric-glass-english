@@ -1,6 +1,7 @@
 const MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 const ASSETS = {};
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+const REVALIDATE_ASSETS = new Set(['/', '/index.html', '/app.js', '/answer-format.mjs', '/styles.css', '/sw.js', '/manifest.webmanifest']);
 const rateBuckets = new Map();
 
 function json(data, status = 200) { return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS }); }
@@ -9,7 +10,7 @@ function asset(request) {
   const key = path === '/' ? '/index.html' : path;
   const file = ASSETS[key];
   if (!file) return new Response('Not found', { status: 404 });
-  return new Response(file.body, { headers: { 'content-type': file.type, 'cache-control': key === '/index.html' ? 'no-cache' : 'public, max-age=3600' } });
+  return new Response(file.body, { headers: { 'content-type': file.type, 'cache-control': REVALIDATE_ASSETS.has(key) ? 'no-store' : 'public, max-age=3600' } });
 }
 function extract(result) {
   let output = typeof result === 'string' ? result : result?.response || result?.result?.response || result?.generated_text || result?.output_text || '';
@@ -78,6 +79,13 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/explain') return explain(request, env);
-    return env.ASSETS?.fetch ? env.ASSETS.fetch(request) : asset(request);
+    if (!env.ASSETS?.fetch) return asset(request);
+    const response = await env.ASSETS.fetch(request);
+    if (response.ok && REVALIDATE_ASSETS.has(url.pathname)) {
+      const headers = new Headers(response.headers);
+      headers.set('cache-control', 'no-store');
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+    }
+    return response;
   }
 };
