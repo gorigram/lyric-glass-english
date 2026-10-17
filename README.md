@@ -16,7 +16,7 @@
 
 - **HTML/CSS/JavaScript（依存なし）**: 画面と操作が小さく、ビルド時に外部ライブラリを取り込まずに済みます。SitesのWorker ESM starterは `worker/index.js` だけを配置するため、`worker/build-site-bundle.mjs` がPWAファイルを単一Workerに埋め込みます。ローカルの読みやすい編集元は `public/` と `worker/src/index.js` に分かれています。
 - **Cloudflare Workers**: 静的ファイルと `/api/explain` を同一オリジンで配信できるため、ブラウザーにAI資格情報を置かずに済みます。通常のWrangler構成はCloudflareのネイティブWorkers AI binding `env.AI` を使います。Sites Worker向けはAI bindingが利用できない場合にも対応できるようWorkers AI REST APIのサーバー側secret経路も実装しています。未接続時は503を返し、案内を表示します。
-- **Workers AI / `@cf/qwen/qwen3-30b-a3b-fp8`**: 多言語対応の指示モデルを日本語の語彙・文法解説に使います。モデル名はWorker内だけにあり、ブラウザーへ秘密情報は送信しません。利用にはCloudflareアカウントのWorkers AI利用設定と、bindingまたはREST API用の実行時認証が必要です。
+- **Workers AI / `@cf/qwen/qwen3-30b-a3b-fp8`**: 多言語対応の指示モデルを日本語の語彙・文法解説に使います。短い学習解説用にQwen公式の非thinking推奨sampling値を設定し、system promptの`/no_think`で回答を簡潔にします。モデルが`<think>`ブロックを返してもUIへは出さず、final解説が欠けた場合はエラーにします。[Qwen3のthinking設定](https://qwen.readthedocs.io/en/stable/getting_started/quickstart.html)。モデル名はWorker内だけにあり、ブラウザーへ秘密情報は送信しません。利用にはCloudflareアカウントのWorkers AI利用設定と、bindingまたはREST API用の実行時認証が必要です。
 - **localStorage**: MVPでは利用者の歌詞、登録曲、学習ノートを端末内に保存します。アカウントやサーバー同期はありません。ブラウザーのサイトデータを消すと保存内容も消えます。
 - **PWA manifest + Service Worker**: ホーム画面追加と画面シェルのオフライン再表示を可能にします。AI質問にはネットワークとWorkers AI接続が必要です。
 - **素のCSSによるLiquid Glass表現**: Apple HIGに合わせ、白い歌詞・解説面は不透明で読みやすくし、浮遊するボトムナビゲーションにだけ半透明・背景ぼかしを使いました。HIGはLiquid Glassをナビゲーションやコントロールの機能レイヤーに控えめに使い、内容面には標準マテリアルを使うよう説明しています。[Apple HIG: Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
