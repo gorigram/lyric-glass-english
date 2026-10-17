@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5">
+  <meta name="description" content="好きな歌詞から、英語の表現を学ぶ。">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <title>lyric glass</title>
+</head>
+<body>
+  <div id="boot" class="boot" aria-label="読み込み中">
+    <div class="boot-mark"></div><div class="skeleton-line wide"></div><div class="skeleton-line short"></div>
+    <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+  </div>
+  <div id="app" class="app is-loading" aria-hidden="true">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="ホーム"><span class="brand-mark">l</span><span>lyric glass</span></a>
+      <button id="installBtn" class="icon-button install-button" aria-label="アプリをインストール" title="インストール">↧</button>
+    </header>
+
+    <main id="main">
+      <section id="homeView" class="view active" aria-labelledby="homeTitle">
+        <div class="section-head">
+          <div><p class="eyebrow">MY SONGS</p><h1 id="homeTitle">曲を選ぶ</h1></div>
+          <button id="addSongOpen" class="add-button"><span>＋</span> 曲を追加</button>
+        </div>
+        <div id="songList" class="song-list"></div>
+        <section class="recent-section">
+          <div class="section-head compact"><div><p class="eyebrow">YOUR NOTES</p><h2>学習ノート</h2></div><span id="noteCount" class="count-pill">0</span></div>
+          <div id="recentList" class="recent-list"></div>
+        </section>
+      </section>
+
+      <section id="studyView" class="view" aria-labelledby="studyTitle">
+        <button class="back-link" data-nav="home">‹ <span>曲一覧</span></button>
+        <div id="studyHeader" class="study-header"></div>
+        <div class="lyric-panel">
+          <div class="panel-heading"><div><p class="eyebrow">LYRICS</p><h2>歌詞を読む</h2></div><button id="lyricsHelp" class="tiny-help" aria-label="歌詞について">i</button></div>
+          <p class="hint">歌詞を貼り付けると、行や語句を選んで質問できます。</p>
+          <textarea id="lyricsInput" placeholder="学習したい歌詞をここに入力してください。&#10;入力した歌詞はこの端末内だけに保存されます。" aria-label="学習したい歌詞"></textarea>
+          <div class="lyric-actions"><span id="charCount">0字</span><button id="saveLyrics" class="text-action">歌詞を保存</button></div>
+          <div class="selection-row"><div class="selected-chip" id="selectedText">語句を選択してください</div><button id="askSelected" class="primary-button" disabled>この語句を質問 <span>↗</span></button></div>
+          <div id="lyricLines" class="lyric-lines" aria-label="歌詞の行"></div>
+        </div>
+        <div class="phrase-note"><span class="note-icon">✳</span><div><strong>タイトルの英語表現</strong><p>歌詞を入力しなくても、曲名に含まれる表現の学習メモを読めます。</p></div></div>
+        <div id="phraseCards" class="phrase-cards"></div>
+      </section>
+
+      <section id="notesView" class="view" aria-labelledby="notesTitle">
+        <div class="section-head"><div><p class="eyebrow">SAVED</p><h1 id="notesTitle">学習ノート</h1></div><span id="notesCount" class="count-pill">0</span></div>
+        <div id="allNotes" class="all-notes"></div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="メインナビゲーション">
+      <button class="tab active" data-nav="home"><span class="tab-icon">⌂</span><span>曲を選ぶ</span></button>
+      <button class="tab" data-nav="notes"><span class="tab-icon">▤</span><span>ノート</span><i id="tabDot" class="tab-dot"></i></button>
+    </nav>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <dialog id="addSongDialog" class="sheet-dialog">
+    <form id="addSongForm" method="dialog" class="sheet-content">
+      <div class="sheet-handle"></div><button class="sheet-close" type="button" data-close="addSongDialog" aria-label="閉じる">×</button>
+      <p class="eyebrow">ADD A SONG</p><h2>曲を追加</h2><p class="sheet-description">タイトルとアーティストを登録します。歌詞はご自身で入力してください。</p>
+      <label>曲名<input id="newTitle" required maxlength="80" placeholder="曲名"></label>
+      <label>アーティスト<input id="newArtist" required maxlength="80" placeholder="アーティスト名"></label>
+      <button class="primary-button full" type="submit">曲を追加する <span>↗</span></button>
+    </form>
+  </dialog>
+  <dialog id="questionDialog" class="sheet-dialog">
+    <form id="questionForm" class="sheet-content">
+      <div class="sheet-handle"></div><button class="sheet-close" type="button" data-close="questionDialog" aria-label="閉じる">×</button>
+      <p class="eyebrow">ASK ABOUT ENGLISH</p><h2>この表現について</h2>
+      <div id="questionPhrase" class="question-phrase"></div>
+      <label>知りたいこと<input id="questionInput" maxlength="300" placeholder="例：この文の文法とニュアンスを教えて"></label>
+      <div id="answerArea" class="answer-area" aria-live="polite"></div>
+      <button id="submitQuestion" class="primary-button full" type="submit">日本語で解説 <span>↗</span></button>
+    </form>
+  </dialog>
+  <dialog id="helpDialog" class="sheet-dialog">
+    <div class="sheet-content"><div class="sheet-handle"></div><button class="sheet-close" type="button" data-close="helpDialog" aria-label="閉じる">×</button><p class="eyebrow">ABOUT LYRICS</p><h2>歌詞について</h2><p class="help-copy">歌詞はご自身で入力してください。入力した内容はこの端末に保存されます。曲名とアーティスト名から歌詞を取得することはありません。</p><button class="secondary-button full" data-close="helpDialog">閉じる</button></div>
+  </dialog>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

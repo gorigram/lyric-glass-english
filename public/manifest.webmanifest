@@ -1,0 +1,12 @@
+{
+  "name": "lyric glass — 英語学習",
+  "short_name": "lyric glass",
+  "description": "好きな歌詞から英語の表現を学ぶ",
+  "lang": "ja",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f7f5",
+  "theme_color": "#f7f7f5",
+  "icons": [{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
