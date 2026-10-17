@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(fileURLToPath(import.meta.url));
 const publicDir = resolve(root, '../public');
 const source = await readFile(join(root, 'src/index.js'), 'utf8');
-const types = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.webmanifest':'application/manifest+json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png' };
-const files = ['index.html','styles.css','app.js','manifest.webmanifest','icon.svg','sw.js'];
+const types = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.webmanifest':'application/manifest+json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png' };
+const files = ['index.html','styles.css','app.js','answer-format.mjs','manifest.webmanifest','icon.svg','sw.js'];
 const assets = {};
 for (const file of files) {
   const ext = file.slice(file.lastIndexOf('.'));

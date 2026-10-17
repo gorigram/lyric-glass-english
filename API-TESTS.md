@@ -1,6 +1,10 @@
 # Workers API contract check
 
-2026-10-18に、生成済み `worker/index.js` をNode.jsから直接importし、`fetch()`へHTTP Requestを渡して契約とQwen3回答処理を確認しました。テストは `work/api-contract.mjs` で実行します。
+Node.jsから生成済み `worker/index.js` を直接importし、`fetch()`へHTTP Requestを渡してAPI契約とQwen3回答処理を検証します。`outputs/lyric-glass` ディレクトリで次を実行してください。
+
+```sh
+node tests/api-contract.mjs
+```
 
 | 確認項目 | 期待結果 | 結果 |
 |---|---:|---|
@@ -19,6 +23,6 @@
 | `</think>`のない未完了思考 | 502、思考内容を返さない | PASS |
 | 思考ブロック後にfinal回答が空 | 502 | PASS |
 
-stub確認では、想定model ID、700 max tokens、`temperature: 0.7`・`top_p: 0.8`・`top_k: 20`、system prompt末尾の`/no_think`、質問内容の渡し方、応答JSONのキーを確認しました。thinkingブロックは表示結果から除去し、閉じていないブロックやfinalが空の出力は502にします。stubによる200応答はWorkerのAPI契約確認だけを示し、Cloudflare Workers AIの実接続を示しません。Cloudflare Sitesの本番runtime envは未設定のため、実AI接続・生成結果・本番推論は未検証です。
+stub確認では、想定model ID、700 max tokens、`temperature: 0.7`・`top_p: 0.8`・`top_k: 20`、system prompt末尾の`/no_think`、質問内容の渡し方、応答JSONのキーを確認しました。thinkingブロックは表示結果から除去し、閉じていないブロックやfinalが空の出力は502にします。stubによる200応答はWorkerのAPI契約確認だけを示し、実AIへのリクエストは発生させません。公開版のWorkers AI bindingを使った本番質問・保存・再読込は前版で別途確認済みです。最新の回答整形変更は本番再デプロイ待ちです。
 
-一時実行scriptは `work/api-contract.mjs` に置いています。Cloudflareへの推論リクエストは行っていません。
+Cloudflareへの推論リクエストは行っていません。Workerの実AI bindingを使わず、stub応答を与えて出力処理を検証します。
