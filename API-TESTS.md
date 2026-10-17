@@ -23,6 +23,16 @@ node tests/api-contract.mjs
 | `</think>`のない未完了思考 | 502、思考内容を返さない | PASS |
 | 思考ブロック後にfinal回答が空 | 502 | PASS |
 
-stub確認では、想定model ID、700 max tokens、`temperature: 0.7`・`top_p: 0.8`・`top_k: 20`、system prompt末尾の`/no_think`、質問内容の渡し方、応答JSONのキーを確認しました。thinkingブロックは表示結果から除去し、閉じていないブロックやfinalが空の出力は502にします。stubによる200応答はWorkerのAPI契約確認だけを示し、実AIへのリクエストは発生させません。公開版のWorkers AI bindingを使った本番質問・保存・再読込は前版で別途確認済みです。最新の回答整形変更は本番再デプロイ待ちです。
+stub確認では、想定model ID、700 max tokens、`temperature: 0.7`・`top_p: 0.8`・`top_k: 20`、system prompt末尾の`/no_think`、質問内容の渡し方、応答JSONのキーを確認しました。thinkingブロックは表示結果から除去し、閉じていないブロックやfinalが空の出力は502にします。stubによる200応答はWorkerのAPI契約確認だけを示し、実AIへのリクエストは発生させません。公開版のWorkers AI bindingを使った本番推論、保存と再読込、最新bundleの表示確認は [BROWSER-TESTS.md](BROWSER-TESTS.md) に記録しています。
 
-Cloudflareへの推論リクエストは行っていません。Workerの実AI bindingを使わず、stub応答を与えて出力処理を検証します。
+このNode runnerはCloudflareへの推論リクエストを行いません。Workerの実AI bindingを使わず、stub応答を与えて出力処理を検証します。HTML escapeと許可したmarkdown表示処理は `node tests/answer-format.mjs` の5件、asset cache/release参照は `node tests/release-cache.mjs` の22件で別途確認します。
+
+## Release cache check
+
+再公開後に古いHTML、module、CSS、Service Workerが残らないことを確認するには、同じディレクトリで次を実行してください。
+
+```sh
+node tests/release-cache.mjs
+```
+
+22 checks passed: Workerの独自配信とCloudflare `ASSETS` bindingの双方でentrypoint cache headerが`no-store`となること、HTML・module・Service Workerが同じrelease queryを参照すること、Service WorkerがHTTP cacheを使わずnetwork-firstで更新しながらoffline shellを保持することを確認します。
